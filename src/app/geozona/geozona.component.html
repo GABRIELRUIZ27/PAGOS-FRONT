@@ -1,0 +1,10 @@
+<p>aqui empieza geozona</p>
+<div>
+    <select [(ngModel)]="nombreMunicipio" (change)="cargarCoordenadasMunicipioSeleccionado()">
+        <option value="" disabled selected>Selecciona un municipio</option>
+        <option *ngFor="let municipio of municipios" [value]="municipio">{{ municipio }}</option>
+    </select>
+    
+</div>
+  <div #mapContainer style="height: 400px; width: 100%;"></div>
+  

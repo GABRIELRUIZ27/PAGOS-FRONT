@@ -1,0 +1,15 @@
+.dropdown-item.active {
+  background: rgb(70 85 101 / 43%) !important;
+}
+
+.navbar-toggler {
+  background-color: #8b0d73 !important;
+}
+
+.navbar-toggler-icon {
+  filter: brightness(0) invert(1); /* Cambia el color del ícono a blanco */
+}
+
+.navbar-brand {
+  color: white !important; /* Ajusta el color del texto o los elementos de marca */
+}

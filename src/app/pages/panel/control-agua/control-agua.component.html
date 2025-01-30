@@ -1,0 +1,392 @@
+<ngx-spinner
+  bdColor="rgba(0,0,0,0.41)"
+  size="large"
+  color="#ffffff"
+  type="ball-scale-multiple"
+  [fullScreen]="true"
+>
+  <p style="color: white">Guardando...</p>
+</ngx-spinner>
+
+<app-page-header headerTitle="Generar cobro de agua potable"></app-page-header>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body border-bottom py-3">
+        <div class="d-flex align-items-center">
+          <button
+            class="btn btn-primary me-2"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-usuario"
+            (click)="handleChangeAdd()"
+          >
+            <i class="ti ti-plus me-1"></i>Agregar
+          </button>
+          <div class="ms-auto d-flex align-items-center">
+            <div class="input-icon">
+              <input
+                #searchItem
+                type="text"
+                class="form-control form-control-rounded"
+                placeholder="Buscar"
+                (input)="handleChangeSearch($event)"
+              />
+              <span class="input-icon-addon">
+                <i class="ti ti-search"></i>
+              </span>
+            </div>
+            <a
+              class="btn w-30 btn-icon"
+              aria-label="Dribbble"
+              (click)="exportarDatosAExcel()"
+              title="Descargar excel de personal"
+              style="margin-left: 8px; padding-top: 4px; padding-bottom: 4px"
+            >
+              <i
+                class="ti ti-cloud-down text-muted"
+                style="font-size: 28px"
+              ></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <ng-container [ngSwitch]="isLoading">
+        <div style="height: 300px" *ngSwitchCase="2">
+          <div class="progress">
+            <div class="progress-bar progress-bar-indeterminate bg-green"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div>
+              <form [formGroup]="comunidadForm">
+                <label style="margin-top: 5px; margin-left: 10px;" class="form-label">Filtrar por usuarios de agua potable:</label>
+                <ng-select 
+                  #selectarea 
+                  formControlName="areaId" 
+                  [searchable]="true" 
+                  [items]="agua"
+                  placeholder="Todas los usuarios"
+                  bindValue="id" 
+                  [clearable]="true" 
+                  (change)="onSelectPrograma($event?.id)" 
+                  (clear)="onClear()" 
+                  style="margin-bottom: 5px; margin-left: 10px;"
+                >
+                  <ng-template ng-option-tmp let-item="item"let-index="index">
+                    {{ item.contrato }} - {{ item.nombre }} <!-- Mostrar contrato y nombre -->
+                  </ng-template>
+                  <ng-template ng-label-tmp let-item="item">
+                    {{ item.contrato }} - {{ item.nombre }}
+                  </ng-template>
+                  <!-- Custom template for the selected item -->        
+                </ng-select>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="3" class="table-responsive">
+          <table class="table table-vcenter card-table table-striped">
+            <thead>
+              <tr>
+                <th
+                  style="text-transform: none; font-size: inherit"
+                  class="text-center"
+                >
+#
+                </th>
+                <th style="text-transform: none; font-size: inherit" class="text-center">
+                    Nombre
+                  </th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Contrato</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Fecha</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Importe</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Estatus de Pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let agua of controlFilter | paginate : configPaginator;
+                  let pointIndex = index
+                "
+              >
+              <td class="text-center">
+                {{
+                  configPaginator.itemsPerPage *
+                    (configPaginator.currentPage - 1) +
+                    pointIndex +
+                    1
+                }}
+              </td>
+                <td class="text-center">{{ agua.agua.nombre }}</td>
+                <td class="text-center">{{ agua.agua.contrato }}</td>
+                <td class="text-center">{{ agua.fecha | date: 'dd-MM-yyyy' }}</td>
+                <td class="text-center">{{ agua.importe | currency: 'MXN':'symbol-narrow':'1.2-2' }}</td>
+                <td class="text-center">
+                  <span [ngClass]="{'text-success': agua.pago, 'text-danger': !agua.pago}">
+                    {{ agua.pago ? 'PAGADO' : 'NO PAGADO' }}
+                  </span>
+                </td>           
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">
+            <label class="form-label" style="margin-top: 15px; font-size: 24px">
+              {{ sinAguaMessage }}</label>
+          </div>
+        </div>
+
+        <app-no-results *ngSwitchCase="4"></app-no-results>
+      </ng-container>
+      <!-- Fin *ngSwitchCase-->
+
+      <div class="card-footer d-flex align-items-center">
+        <p class="m-0 text-muted">
+          Total de registros: <b>{{ controlFilter.length }}</b>
+        </p>
+        <div class="m-0 ms-auto">
+          <pagination-controls
+            (pageChange)="onPageChange($event)"
+            previousLabel=""
+            nextLabel=""
+          >
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal modal-blur fade"
+  id="modal-usuario"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ isModalAdd ? "Agregar" : "Actualizar" }} pago de agua potable
+        </h5>
+        <button
+          #closebutton
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="resetForm()"
+        ></button>
+      </div>
+
+      <form [formGroup]="aguaForm" (ngSubmit)="submit()">
+        <div class="modal-body">
+          <div class="">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                      <label class="form-label">Fecha*:</label>
+                      <input
+                        type="date"
+                        class="form-control"
+                        formControlName="fecha"
+                      />
+                      <div
+                        *ngIf="aguaForm.get('fecha')?.touched"
+                        class="error-message"
+                      >
+                        <div
+                          *ngIf="aguaForm.get('fecha')?.hasError('required')"
+                        >
+                          <p style="color: red">La fecha de pago es obligatoria</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label">Número de Contrato y Nombre*:</label>
+                    <ng-select
+                      placeholder="Elegir"
+                      [items]="agua"
+                      bindLabel="nombre"
+                      bindValue="id"
+                      [searchable]="true"
+                      [clearable]="false"
+                      formControlName="agua"
+                      (change)="onSelectAgua($event)" 
+                    >
+                      <ng-template ng-option-tmp let-item="item">
+                        {{ item.contrato }} - {{ item.nombre }} <!-- Mostrar contrato y nombre -->
+                      </ng-template>
+                      <ng-template ng-label-tmp let-item="item">
+                        {{ item.contrato }} - {{ item.nombre }}
+                      </ng-template>
+                    </ng-select>
+                    <div *ngIf="aguaForm.get('agua')?.touched" class="error-message">
+                      <div *ngIf="aguaForm.get('agua')?.hasError('required')">
+                        <p style="color: red">El usuario es obligatorio</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div class="row">
+            <!-- Campo de dirección (bloqueado) -->
+            <div class="col-lg-6">
+              <div class="mb-3">
+                <label class="form-label">Domicilio:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [value]="selectedDomicilio" 
+                  readonly
+                />
+              </div>
+            </div>
+              <!-- Campo de periodo (bloqueado) -->
+              <div class="col-lg-6">
+                <div class="mb-3">
+                  <label class="form-label">Último Período de Pago</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [value]="selectedPeriodo" 
+                    readonly
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                    <label class="form-label">Descripción*:</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="descripcion"
+                    />
+                    <div
+                        *ngIf="aguaForm.get('descripcion')?.touched"
+                        class="error-message"
+                    >
+                        <div
+                        *ngIf="aguaForm.get('descripcion')?.hasError('required')"
+                        >
+                        <p style="color: red">La descripción es obligatoria</p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="row">
+          <!-- Campo de periodo -->
+          <div class="col-lg-12">
+            <div class="mb-3">
+              <label class="form-label">Periodo (Ejemplo: Octubre 2024 - Noviembre 2024):</label>
+              <input
+              type="text"
+              class="form-control"
+              placeholder="Ingrese el periodo"
+              formControlName="periodo"
+              (input)="onPeriodoChange($event)"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Row con los resultados de agua y alcantarillado -->
+        <div class="row">
+          <!-- Monto de agua -->
+          <div class="col-lg-4">
+            <div class="mb-3">
+              <label class="form-label">Total Agua:</label>
+              <input type="text" formControlName="servicio" class="form-control" [value]="totalAgua | currency"/>
+            </div>
+          </div>
+        
+          <!-- Monto de alcantarillado -->
+        <div class="col-lg-4">
+          <div class="mb-3">
+            <label class="form-label">Total Alcantarillado:</label>
+            <input type="text" formControlName="servicio" class="form-control" [value]="totalAlcantarillado | currency"/>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="mb-3">
+            <label class="form-label">Recargos:</label>
+            <input type="text" formControlName="recargos" class="form-control">
+          </div>
+        </div>
+      </div>
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="mb-3">
+              <label class="form-label">Importe*:</label>
+              <input
+              formControlName="importe"
+              type="text"
+              class="form-control"
+              [value]="aguaForm.get('importe')?.value | currency"
+              readonly
+            />
+              <div
+                *ngIf="aguaForm.get('importe')?.touched"
+                class="error-message"
+              >
+                <div
+                  *ngIf="aguaForm.get('importe')?.hasError('required')"
+                >
+                  <p style="color: red">El importe es obligatorio</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label">¿Cuenta con INAPAM?*</label>
+              <label class="switch">
+                <input type="checkbox" formControlName="inapam" (change)="onInapamChange($event)" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+        </div>        
+        
+            </div>
+        </div>
+        <p
+          class="form-label"
+          style="margin-left: 20px; color: red; font-weight: bold"
+        >
+          Todos los campos marcados con * son requeridos
+        </p>
+        <div class="modal-footer">
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="!aguaForm.valid"
+          >
+            {{ isModalAdd ? "Agregar" : "Actualizar" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

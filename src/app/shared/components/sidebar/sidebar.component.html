@@ -1,0 +1,235 @@
+<div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <h1 class="navbar-brand navbar-brand-autodark d-flex justify-content-center align-items-center">
+        <img src="../../../../assets/images/logo-ape.png" style="width: 110px; height: 110px" alt="PAC" />
+    </h1>
+    <div class="collapse navbar-collapse" id="sidebar-menu" *ngIf="dataObject && dataObject.isAuthenticated">
+        <ul class="navbar-nav pt-lg-3">
+            <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *appHasClaim="'CanAccessInicio'" (click)="cerrarMenu()">
+                <a class="nav-link" [routerLink]="['inicio']">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+            <i class="ti ti-home"></i>
+          </span>
+                    <span class="nav-link-title">Inicio</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown" *appHasClaim="'canAccessAdministracion'" [ngClass]="{
+          active:
+            (rlProgramasSociales && rlProgramasSociales.isActive) ||
+            (rlPersonal && rlPersonal.isActive) ||
+            (rlAreas && rlAreas.isActive)
+        }">
+                <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+            <i class="ti ti-shield"></i>
+          </span>
+                    <span class="nav-link-title"> Administración </span>
+                </a>
+                <ul class="dropdown-menu show">
+                    <div class="dropdown-menu-columns">
+                        <div class="dropdown-menu-column">
+                            <a *appHasClaim="'CanAccessUsuarios'" class="dropdown-item" [routerLink]="['usuarios']" routerLinkActive="active" #rlUsuarios="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-users"></i>
+                </span>
+                                <span class="nav-link-title">Usuarios</span>
+                            </a>
+
+                            <a *appHasClaim="'CanAccessAreas'" class="dropdown-item" [routerLink]="['areas']" routerLinkActive="active" #rlAreas="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-building-community"></i>
+                </span>
+                                <span class="nav-link-title">Áreas</span>
+                            </a>
+                            <a *appHasClaim="'CanAccessPersonal'" class="dropdown-item" [routerLink]="['personal']" routerLinkActive="active" #rlPersonal="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-friends"></i>
+                </span>
+                                <span class="nav-link-title">Personal</span>
+                            </a>
+                        </div>
+                    </div>
+                </ul>
+            </li>
+            <li class="nav-item dropdown" *appHasClaim="'canAccessContaduria'" [ngClass]="{
+                active:
+                  (rlDashboardFinanciero && rlDashboardFinanciero.isActive) ||
+                  
+                  (rlAgua && rlAgua.isActive) ||
+                  (rlAdquisiciones && rlAdquisiciones.isActive) 
+              }">
+                      <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                          <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-users"></i>
+                </span>
+                          <span class="nav-link-title"> Control de Padrones </span>
+                      </a>
+                      <ul class="dropdown-menu show">
+                          <div class="dropdown-menu-columns">
+                              <div class="dropdown-menu-column">
+                                  
+                                   <a *appHasClaim="'CanAccessAgua'" class="dropdown-item" [routerLink]="['agua-potable']" routerLinkActive="active" #rlAgua="routerLinkActive" (click)="cerrarMenu()">
+                                      <span class="nav-link-icon d-md-none d-lg-inline-block">
+                        <i class="ti ti-droplet"></i>
+                      </span>
+                                      <span class="nav-link-title">Agua Potable</span>
+                                  </a> 
+                              </div>
+                          </div>
+                      </ul>
+                  </li>
+                  <li class="nav-item dropdown" *appHasClaim="'canAccessPadron'" [ngClass]="{
+                    active:
+                      (rlControlAgua && rlControlAgua.isActive) 
+                  }">
+                          <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <i class="ti ti-building-bank"></i>
+                    </span>
+                              <span class="nav-link-title"> Generar orden de pago </span>
+                          </a>
+                          <ul class="dropdown-menu show">
+                              <div class="dropdown-menu-columns">
+                                  <div class="dropdown-menu-column">
+                                       <a *appHasClaim="'CanAccessControlAgua'" class="dropdown-item" [routerLink]="['control-agua']" routerLinkActive="active" #rlControlAgua="routerLinkActive" (click)="cerrarMenu()">
+                                          <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-droplet"></i>
+                          </span>
+                                          <span class="nav-link-title">Agua Potable</span>
+                                      </a> 
+                                  </div>
+                              </div>
+                          </ul>
+                      </li>
+                      <li class="nav-item dropdown" *appHasClaim="'canAccessPagos'" [ngClass]="{
+                        active:
+                          (rlPagoAgua && rlPagoAgua.isActive) 
+                      }">
+                              <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                          <i class="ti ti-wallet"></i>
+                        </span>
+                                  <span class="nav-link-title"> Generar Pagos </span>
+                              </a>
+                              <ul class="dropdown-menu show">
+                                  <div class="dropdown-menu-columns">
+                                      <div class="dropdown-menu-column">
+                                           <a *appHasClaim="'CanAccessControlAgua'" class="dropdown-item" [routerLink]="['pago-agua']" routerLinkActive="active" #rlPagoAgua="routerLinkActive" (click)="cerrarMenu()">
+                                              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-droplet"></i>
+                              </span>
+                                              <span class="nav-link-title">Agua Potable</span>
+                                          </a> 
+                                      </div>
+                                  </div>
+                              </ul>
+                          </li>
+            <li class="nav-item dropdown" *appHasClaim="'CanAccessOperacion'" [ngClass]="{
+          active:
+          (rlUsuarios && rlUsuarios.isActive) ||
+          (rlSolicitudesApoyos && rlSolicitudesApoyos.isActive)  ||
+          (rlApoyos && rlApoyos.isActive)  
+        }">
+                <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+            <i class="ti ti-mood-heart"></i>
+          </span>
+                    <span class="nav-link-title">Asistencia Social</span>
+                </a>
+                <ul class="dropdown-menu show">
+                    <div class="dropdown-menu-columns">
+                        <div class="dropdown-menu-column">
+                            <a *appHasClaim="'CanAccessProgramasSociales'" class="dropdown-item" [routerLink]="['programas-sociales']" routerLinkActive="active" #rlProgramasSociales="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-social"></i>
+                </span>
+                                <span class="nav-link-title">Programas Sociales</span>
+                            </a>
+                            <a *appHasClaim="'canAccessApoyos'" class="dropdown-item" [routerLink]="['apoyos']" routerLinkActive="active" #rlApoyos="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-heart-handshake"></i>
+                </span>
+                                <span class="nav-link-title">Apoyos</span>
+                            </a>
+                            <a *appHasClaim="'canAccessApoyos'" class="dropdown-item" [routerLink]="['solicitudes']" routerLinkActive="active" #rlSolicitudesApoyos="routerLinkActive" (click)="cerrarMenu()">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-folder-plus"></i>
+                </span>
+                                <span class="nav-link-title">Solicitudes de Apoyos</span>
+                            </a>                           
+                        </div>
+                    </div>
+                </ul>
+            </li>
+            <li class="nav-item dropdown" *appHasClaim="'CanAccessMapas'" [ngClass]="{
+                active:
+                (rlMapaApoyos && rlMapaApoyos.isActive) ||
+                (rlMapaIncidencias && rlMapaIncidencias.isActive)  
+              }">
+                      <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                          <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-map"></i>
+                </span>
+                          <span class="nav-link-title">Mapas</span>
+                      </a>
+                      <ul class="dropdown-menu show">
+                          <div class="dropdown-menu-columns">
+                              <div class="dropdown-menu-column">
+                                  <a *appHasClaim="'CanAccessMapasApoyos'" class="dropdown-item" [routerLink]="['mapa-apoyos']" routerLinkActive="active" #rlMapaApoyos="routerLinkActive" (click)="cerrarMenu()">
+                                      <span class="nav-link-icon d-md-none d-lg-inline-block">
+                        <i class="ti ti-current-location"></i>
+                      </span>
+                                      <span class="nav-link-title">Mapa de Apoyos</span>
+                                  </a>
+                                  <a *appHasClaim="'CanAccessMapasIncidencias'" class="dropdown-item" [routerLink]="['mapa-incidencias']" routerLinkActive="active" #rlMapaIncidencias="routerLinkActive" (click)="cerrarMenu()">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <i class="ti ti-current-location"></i>
+                    </span>
+                                    <span class="nav-link-title">Mapa de Incidencias</span>
+                                </a>
+                              </div>
+                          </div>
+                      </ul>
+                  </li>
+                  <li class="nav-item dropdown" *appHasClaim="'CanAccessSeguridad'" [ngClass]="{
+                    active:
+                    (rlDashboardIncidencias && rlDashboardIncidencias.isActive) ||
+                    (rlIncidencias && rlIncidencias.isActive) ||
+                    (rlTiposIncidencias && rlTiposIncidencias.isActive)  
+                  }">
+                          <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <i class="ti ti-user-shield"></i>
+                    </span>
+                              <span class="nav-link-title">Seguridad</span>
+                          </a>
+                          <ul class="dropdown-menu show">
+                              <div class="dropdown-menu-columns">
+                                  <div class="dropdown-menu-column">
+                                    <a *appHasClaim="'CanAccessDashboardIncidencias'" class="dropdown-item" [routerLink]="['dashboard-incidencias']" routerLinkActive="active" #rlDashboardIncidencias="routerLinkActive" (click)="cerrarMenu()">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                          <i class="ti ti-chart-dots"></i>
+                        </span>
+                                        <span class="nav-link-title">Tablero de Incidencias</span>
+                                    </a>
+                                      <a *appHasClaim="'CanAccessTiposIncidencias'" class="dropdown-item" [routerLink]="['tipos-incidencias']" routerLinkActive="active" #rlTiposIncidencias="routerLinkActive" (click)="cerrarMenu()">
+                                          <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-urgent"></i>
+                          </span>
+                                          <span class="nav-link-title">Tipos de Incidencias</span>
+                                      </a>
+                                      <a *appHasClaim="'CanAccessIncidencias'" class="dropdown-item" [routerLink]="['incidencias']" routerLinkActive="active" #rlIncidencias="routerLinkActive" (click)="cerrarMenu()">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                          <i class="ti ti-ambulance"></i>
+                        </span>
+                                        <span class="nav-link-title">Incidencias Atendidas</span>
+                                    </a>
+                                  </div>
+                              </div>
+                          </ul>
+                      </li>
+        </ul>
+    </div>
+</div>

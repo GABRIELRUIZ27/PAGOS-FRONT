@@ -1,0 +1,4 @@
+.modal-backdrop.show {
+    backdrop-filter: blur(5px); /* Ajusta el valor para más o menos desenfoque */
+    background-color: rgba(0, 0, 0, 0.5); /* Color del fondo con transparencia */
+}

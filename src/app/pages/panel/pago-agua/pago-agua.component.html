@@ -1,0 +1,243 @@
+<ngx-spinner
+  bdColor="rgba(0,0,0,0.41)"
+  size="large"
+  color="#ffffff"
+  type="ball-scale-multiple"
+  [fullScreen]="true"
+>
+  <p style="color: white">Guardando...</p>
+</ngx-spinner>
+
+<app-page-header headerTitle="Generar pago de agua potable"></app-page-header>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body border-bottom py-3">
+        <div class="d-flex align-items-center">
+          <div class="ms-auto d-flex align-items-center">
+            <div class="input-icon">
+              <input
+                #searchItem
+                type="text"
+                class="form-control form-control-rounded"
+                placeholder="Buscar"
+                (input)="handleChangeSearch($event)"
+              />
+              <span class="input-icon-addon">
+                <i class="ti ti-search"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-container [ngSwitch]="isLoading">
+        <div style="height: 300px" *ngSwitchCase="2">
+          <div class="progress">
+            <div class="progress-bar progress-bar-indeterminate bg-green"></div>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="3" class="table-responsive">
+          <table class="table table-vcenter card-table table-striped">
+            <thead>
+              <tr>
+                <th
+                  style="text-transform: none; font-size: inherit"
+                  class="text-center"
+                >
+#
+                </th>
+                <th style="text-transform: none; font-size: inherit" class="text-center">
+                    Nombre
+                  </th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Contrato</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Fecha</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Importe</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Estatus de Pago</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Pagar</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Comprobante</th>                            
+                </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let agua of controlFilter | paginate : configPaginator;
+                  let pointIndex = index
+                "
+              >
+              <td class="text-center">
+                {{
+                  configPaginator.itemsPerPage *
+                    (configPaginator.currentPage - 1) +
+                    pointIndex +
+                    1
+                }}
+              </td>
+                <td class="text-center">{{ agua.agua.nombre }}</td>
+                <td class="text-center">{{ agua.agua.contrato }}</td>
+                <td class="text-center">{{ agua.fecha | date: 'dd-MM-yyyy' }}</td>
+                <td class="text-center">{{ agua.importe | currency: 'MXN':'symbol-narrow':'1.2-2' }}</td>
+                <td class="text-center">
+                  <span [ngClass]="{'text-success': agua.pago, 'text-danger': !agua.pago}">
+                    {{ agua.pago ? 'PAGADO' : 'NO PAGADO' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex justify-content-center gap-2">
+                    <button
+                      class="btn btn-success btn-icon btn-sm"
+                      (click)="setDataModalUpdate(agua)"
+                      (click)="pagar(agua.id, agua)"
+                      [disabled]="agua.pago" 
+                    >
+                      <i class="ti ti-currency-dollar"></i> Pagar&nbsp;
+                    </button>
+                  </div>
+                </td>  
+                <td>
+                  <div class="d-flex justify-content-center gap-2">
+                    
+                    <button class= "btn btn-info btn-icon btn-sm" (click)="abrirModalReciboPago(agua)" [disabled]="!agua.pago" data-bs-toggle="modal"
+                    data-bs-target="#modal-ReciboPago"
+                    >
+                      <i class="ti ti-file-download me-2"></i> Generar Ficha&nbsp;
+                    </button>
+                  </div>
+                </td>
+                        
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">
+            <label class="form-label" style="margin-top: 15px; font-size: 24px">
+              {{ sinAguaMessage }}</label>
+          </div>
+        </div>
+
+        <app-no-results *ngSwitchCase="4"></app-no-results>
+      </ng-container>
+      <!-- Fin *ngSwitchCase-->
+
+      <div class="card-footer d-flex align-items-center">
+        <p class="m-0 text-muted">
+          Total de registros: <b>{{ controlFilter.length }}</b>
+        </p>
+        <div class="m-0 ms-auto">
+          <pagination-controls
+            (pageChange)="onPageChange($event)"
+            previousLabel=""
+            nextLabel=""
+          >
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar el recibo de pago -->
+<div class="modal modal-blur fade"
+id="modal-ReciboPago"
+tabindex="-1"
+role="dialog"
+aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="w-100 text-center"  style="background-color: purple; color: white; margin-bottom: 20px; padding: 10px;">
+          <h2>Municipio de Apetatitlán de Antonio Carvajal</h2>
+        </div>
+        <div class="row text-center mb-3">
+          <div class="col-lg-4">
+            <img src="assets/images/logo.png" alt="Logo Izquierda" class="img-fluid" style="max-height: 60px;">
+          </div>
+          <div class="col-lg-4">
+            <h3>Ayuntamiento 2024 - 2027</h3>
+            <h2>Recibo de pago</h2>
+          </div>
+          <div class="col-lg-4">
+            <img src="assets/images/R.jpeg" alt="Logo Derecha" class="img-fluid" style="max-height: 60px;">
+          </div>
+        </div>
+
+        <!-- Área que expide -->
+        <h4 class="text-center">Área que expide</h4>
+        <h4 class="text-center">Agua Potable</h4>
+
+        <div class="row mb-3 justify-content-center">
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Asunto:</strong><br>
+            <span id="asunto" class="text-center"></span>
+          </div>
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Folio:</strong><br>
+            <span id="folio" class="text-center"></span>
+          </div>
+        </div>
+
+        <div class="row mb-3 justify-content-center">
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Contrato:</strong><br>
+            <span id="contrato" class="text-center"></span>
+          </div>
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+            <strong class="text-center">Nombre:</strong><br>
+            <span id="nombreResponsable" class="text-center"></span>
+          </div>
+        </div>
+
+        <div class="row mb-3 justify-content-center">
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Dirección:</strong><br>
+            <span id="direccion" class="text-center"></span>
+          </div>
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+            <strong class="text-center">Comunidad:</strong><br>
+            <span id="comunidad" class="text-center"></span>
+          </div>
+        </div>
+
+        <div class="row mb-3 justify-content-center">
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Periodo de pago:</strong><br>
+            <span id="periodo" class="text-center"></span>
+          </div>
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+            <strong class="text-center">Fecha de pago:</strong><br>
+            <span id="fecha" class="text-center"></span>
+          </div>
+        </div>
+
+        <!-- Descuento INAPAM y Total -->
+        <div class="row mb-3 justify-content-center">
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-right: 10px;">
+            <strong class="text-center">Descuento INAPAM:</strong><br>
+            <span id="inapam" class="text-center"></span>
+          </div>
+          <div class="col-lg-5 text-center" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+            <strong class="text-center">Total:</strong><br>
+            <span id="total" class="text-center"></span>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-12 text-center" style="margin-top: 55px;">
+            <div style="border-top: 1px solid black; width: 200px; margin: auto; margin-top: 10px;"></div> 
+            <strong>Nombre y firma del Responsable:</strong>
+            <!-- Línea para la firma -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-primary" (click)="imprimirRecibo()">Imprimir</button>
+      </div>
+    </div>
+  </div>
+</div>
