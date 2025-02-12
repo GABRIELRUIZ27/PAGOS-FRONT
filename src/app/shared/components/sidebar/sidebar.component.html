@@ -80,7 +80,39 @@
                           </div>
                       </ul>
                   </li>
-                  <li class="nav-item dropdown" *appHasClaim="'canAccessPadron'" [ngClass]="{
+                  <li class="nav-item dropdown" *appHasClaim="'canAccessReportes'" [ngClass]="{
+                    active:
+                      (rlDashboardReportesAgua && rlDashboardReportesAgua.isActive) ||
+                      
+                      (rlReportesAgua && rlReportesAgua.isActive)
+                  }">
+                          <a class="nav-link dropdown-toggle" [routerLink]="" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="true">
+                              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <i class="ti ti-users"></i>
+                    </span>
+                              <span class="nav-link-title"> Reportes </span>
+                          </a>
+                          <ul class="dropdown-menu show">
+                              <div class="dropdown-menu-columns">
+                                  <div class="dropdown-menu-column">
+                                      
+                                    <a *appHasClaim="'CanAccessDashboardReportesAgua'" class="dropdown-item" [routerLink]="['dashboard-reportes']" routerLinkActive="active" #rlDashboardReportesAgua="routerLinkActive" (click)="cerrarMenu()">
+                                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                          <i class="ti ti-droplet"></i>
+                        </span>
+                                        <span class="nav-link-title">Dashboard Reportes</span>
+                                    </a> 
+                                       <a *appHasClaim="'CanAccessReportesAgua'" class="dropdown-item" [routerLink]="['reportes-agua']" routerLinkActive="active" #rlReportesAgua="routerLinkActive" (click)="cerrarMenu()">
+                                          <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <i class="ti ti-flag"></i>
+                          </span>
+                                          <span class="nav-link-title">Reportes Agua Potable</span>
+                                      </a> 
+                                  </div>
+                              </div>
+                          </ul>
+                      </li>
+                  <!-- <li class="nav-item dropdown" *appHasClaim="'canAccessPadron'" [ngClass]="{
                     active:
                       (rlControlAgua && rlControlAgua.isActive) 
                   }">
@@ -125,7 +157,7 @@
                                       </div>
                                   </div>
                               </ul>
-                          </li>
+                          </li> -->
             <li class="nav-item dropdown" *appHasClaim="'CanAccessOperacion'" [ngClass]="{
           active:
           (rlUsuarios && rlUsuarios.isActive) ||

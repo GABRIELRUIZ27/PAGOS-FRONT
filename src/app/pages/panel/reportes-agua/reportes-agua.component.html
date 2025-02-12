@@ -1,0 +1,364 @@
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body border-bottom py-3">
+          <div class="d-flex align-items-center">
+            <button
+              class="btn btn-primary me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#modal-propaganda"
+              (click)="handleChangeAdd()"
+            >
+              <i class="ti ti-plus me-1"></i>Agregar
+            </button>
+            <div class="ms-auto d-flex align-items-center">
+              <div class="input-icon">
+                <input
+                  #searchItem
+                  type="text"
+                  class="form-control form-control-rounded"
+                  placeholder="Buscar"
+                  (input)="handleChangeSearch($event)"
+                />
+                <span class="input-icon-addon">
+                  <i class="ti ti-search"></i>
+                </span>
+              </div>
+              <a
+                class="btn w-30 btn-icon"
+                aria-label="Dribbble"
+                (click)="exportarDatosAExcel()"
+                title="Descargar excel de personal"
+                style="margin-left: 8px; padding-top: 4px; padding-bottom: 4px"
+              >
+                <i
+                  class="ti ti-cloud-down text-muted"
+                  style="font-size: 28px"
+                ></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <ng-container [ngSwitch]="isLoading">
+          <div style="height: 300px" *ngSwitchCase="2">
+            <div class="progress">
+              <div class="progress-bar progress-bar-indeterminate bg-green"></div>
+            </div>
+          </div>
+  
+          <div class="row">
+            <div class="col-lg-6">
+              <div>
+                <form [formGroup]="comunidadForm">
+                  <label style="margin-top: 5px; margin-left: 10px;" class="form-label">Filtrar por comunidad:</label>
+                  <ng-select 
+                    #selectarea 
+                    formControlName="areaId" 
+                    [searchable]="true" 
+                    [items]="comunidades"
+                    placeholder="Todas las comunidades"
+                    bindValue="id" 
+                    [clearable]="true" 
+                    (change)="onSelectPrograma($event?.id)" 
+                    (clear)="onClear()" 
+                    style="margin-bottom: 5px; margin-left: 10px;"
+                  >
+                    <ng-template ng-option-tmp let-item="item"let-index="index">
+                      {{ item.nombre }} <!-- Mostrar contrato y nombre -->
+                    </ng-template>
+                    <ng-template ng-label-tmp let-item="item">
+                     {{ item.nombre }}
+                    </ng-template>
+                    <!-- Custom template for the selected item -->        
+                  </ng-select>
+                </form>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngSwitchCase="3" class="table-responsive">
+            <table class="table table-vcenter card-table table-striped">
+              <thead>
+                <tr>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">#</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Comunidad</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Nombre</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Telefono</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Dirección</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Estatus</th>
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Ubicación</th> <!-- Nueva columna para el estatus -->
+                  <th style="text-transform: none; font-size: inherit" class="text-center">Acciones</th> <!-- Nueva columna para las acciones -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let agua of reporteFilter | paginate : configPaginator; let pointIndex = index">
+                  <td class="text-center">{{ configPaginator.itemsPerPage * (configPaginator.currentPage - 1) + pointIndex + 1 }}</td>
+                  <td class="text-center">{{ agua.comunidad.nombre }}</td>
+                  <td class="text-center" [ngClass]="{ 'text-warning': !agua.nombre }">{{ agua.nombre || 'Dato no proporcionado' }}</td>
+                  <td class="text-center" [ngClass]="{ 'text-warning': !agua.telefono }">{{ agua.telefono || 'Dato no proporcionado' }}</td>
+                  <td class="text-center">{{ agua.direccion }}</td>
+                  <td class="text-center">
+                    <span [ngClass]="{'text-danger': !agua.atendida, 'text-success': agua.atendida}">
+                      {{ agua.atendida ? 'Atendida' : 'Por atender' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex justify-content-between">
+                     <!-- Botón con el icono -->
+                      <button 
+                      class="btn btn-info" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#modal-ubicacion" 
+                      (click)="verUbicacion(agua.latitud, agua.longitud)">
+                      <!-- Icono dentro del botón -->
+                      <i class="ti ti-map-search"></i> &nbsp; Ver ubicación
+                      </button>
+                    </div>
+                  </td>
+                            
+                  <!-- Nueva celda para las acciones -->
+                  <td class="text-center">
+                    <button 
+                      [disabled]="agua.atendida" 
+                      (click)="marcarAtendido(agua)"
+                      class="btn btn-success"
+                    >
+                    <i class="ti ti-circle-check"></i> &nbsp;
+                    {{ agua.atendida ? 'Atendida' : 'Marcar como atendida' }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="text-center">
+              <label class="form-label" style="margin-top: 15px; font-size: 24px">
+                {{ sinAguaMessage }}
+              </label>
+            </div>
+          </div>
+          
+          
+  
+          <app-no-results *ngSwitchCase="4"></app-no-results>
+        </ng-container>
+        <!-- Fin *ngSwitchCase-->
+  
+        <div class="card-footer d-flex align-items-center">
+          <p class="m-0 text-muted">
+            Total de registros: <b>{{ reporteFilter.length }}</b>
+          </p>
+          <div class="m-0 ms-auto">
+            <pagination-controls
+              (pageChange)="onPageChange($event)"
+              previousLabel=""
+              nextLabel=""
+            >
+            </pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div
+  class="modal"
+  id="modal-propaganda"
+  tabindex="-1"
+  role="dialog"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Enviar reporte de fuga
+        </h5>
+        <button
+          #closebutton
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="resetMap(); resetForm()"
+        ></button>
+      </div>
+
+      <form [formGroup]="reporteForm">
+        <div class="modal-body">
+          <div class="row d-flex align-items-center align-items-end">
+            <div class="col-lg-12">
+              <div class="mb-3">
+                <label class="form-label">Comunidad*:</label>
+                <ng-select
+                  formControlName="comunidad"
+                  #selectComunidad
+                  [searchable]="false"
+                  [items]="comunidades"
+                  bindLabel="nombre"
+                  bindValue="id"
+                  placeholder="Elegir comunidad"
+                  [clearable]="false"
+                >
+                  <ng-template ng-header-tmp>
+                    <input
+                      class="form-control"
+                      type="text"
+                      (input)="
+                        selectComunidad.filter($any($event.target).value)
+                      "
+                    />
+                  </ng-template>
+                  <ng-template ng-option-tmp let-item="item" let-index="index">
+                    {{ item.nombre }}
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="mb-3">
+                  <label class="form-label">Nombre:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="nombre"
+                  />
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label class="form-label">Teléfono:</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="telefono"
+                      />
+                      </div>
+                </div>
+            </div>
+
+          <div class="col-lg-12">
+            <div class="mb-3">
+              <div class="form-label">Selecciona una fotografía*</div>
+              <div class="row flex-column">
+                <input
+                  class="input"
+                  type="file"
+                  formControlName="imagenBase64"
+                  (change)="onFileChange($event)"
+                />
+                <div *ngIf="isUpdatingImg" class="img-preview my-1">
+                  <img
+                    [src]="imgPreview"
+                    alt="Image preview"
+                    class="img-fluid"
+                    width="50%"
+                    height="50%"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="mb-3">
+              <img
+                class="img"
+                *ngIf="reporteForm.get('imagenBase64')?.value"
+                [src]="
+                  'data:image/jpeg;base64,' +
+                  reporteForm.get('imagenBase64')?.value
+                "
+                width="50%"
+                height="50%"
+                alt="Vista previa de la imagen"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-10 mt-1 mb-3">
+              <label class="form-label">Dirección*:</label>
+              <input
+                #ubicacionInput
+                class="form-control"
+                type="text"
+                ngx-gp-autocomplete
+                formControlName="direccion"
+                (onAddressChange)="selectAddress($event)"
+              />
+              <div
+                *ngIf="reporteForm.get('direccion')?.touched"
+                class="error-message"
+              >
+                <div
+                  *ngIf="reporteForm.get('direccion')?.hasError('required')"
+                >
+                  La direccion es requerida
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-lg-2 d-flex align-items-end justify-content-end mt-1 mb-3"
+            >
+              <button
+                type="button"
+                title="Obtener ubicación"
+                class="btn btn-info float-end"
+                (click)="getCurrentLocation()"
+              >
+                <i class="ti ti-map-pin"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="mb-3">
+                <div
+                  class="card w-100 altura-mapa"
+                  style="width: 100%; height: 50vh"
+                  #mapCanvas
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+        <p
+          class="form-label"
+          style="margin-left: 20px; color: red; font-weight: bold"
+        >
+          Todos los campos marcados con * son requeridos
+        </p>
+        <div class="modal-footer">
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="!reporteForm.valid"
+            (click)="agregar()"
+          >
+            Enviar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar el mapa -->
+<div class="modal fade" id="modal-ubicacion" tabindex="-1" aria-labelledby="modalUbicacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalUbicacionLabel">Ubicación en el mapa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="map-container" #mapCanvasUbicacion style="width: 100%; height: 400px;"></div>
+      </div>
+    </div>
+  </div>
+</div>

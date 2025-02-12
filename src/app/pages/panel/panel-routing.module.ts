@@ -37,6 +37,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pago-agua/pago-agua.module').then((i) => i.PagoAguaModule),
       },
+      {
+        path: 'reportes-agua',
+        loadChildren: () =>
+          import('./reportes-agua/reportes-agua.module').then((i) => i.ReportesAguaModule),
+      },
     ],
   },
 ];
