@@ -17,7 +17,8 @@ export class SidebarComponent implements AfterViewInit {
   menuColapsado: boolean = true;
 
   @ViewChild('rlReportesAgua') rlReportesAgua!: RouterLinkActive;
-  @ViewChild('rlDashboardReportesAgua') rlDashboardReportesAgua!: RouterLinkActive;
+  @ViewChild('rlMapaReportes') rlMapaReportes!: RouterLinkActive;
+  @ViewChild('rlDashboardReportes') rlDashboardReportes!: RouterLinkActive;
   @ViewChild('rlDashboard') rlDashboard!: RouterLinkActive;
   @ViewChild('rlDashboardFinanciero') rlDashboardFinanciero!: RouterLinkActive;
   @ViewChild('rlDashboardIncidencias') rlDashboardIncidencias!: RouterLinkActive;

@@ -42,6 +42,16 @@ const routes: Routes = [
         loadChildren: () =>
           import('./reportes-agua/reportes-agua.module').then((i) => i.ReportesAguaModule),
       },
+      {
+        path: 'mapa-reportes',
+        loadChildren: () =>
+          import('./mapa-reportes/mapa-reportes.module').then((i) => i.MapaReportesModule),
+      },
+      {
+        path: 'dashboard-reportes',
+        loadChildren: () =>
+          import('./dashboard-reportes/dashboard-reportes.module').then((i) => i.DashboardReportesModule),
+      },
     ],
   },
 ];

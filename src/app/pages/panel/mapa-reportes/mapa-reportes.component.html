@@ -1,0 +1,45 @@
+<app-page-header headerTitle="Mapa de reportes"></app-page-header>
+
+<!-- Filtrado de los puntos en el mapa -->
+<div class="row mb-3">
+  <div class="col-12 text-center">
+    <!-- Botón de Atendidos -->
+    <button 
+      class="btn btn-lg mx-2 custom-btn"
+      [ngClass]="{'btn-outline-success': filtroSeleccionado !== 'green', 'btn-success active-btn': filtroSeleccionado === 'green'}"
+      (click)="filtrarPuntos('green')">
+      <i class="fas fa-check-circle icon-spacing"></i><span>&nbsp;&nbsp;</span> Atendidos
+    </button>
+
+    <!-- Botón de Por Atender -->
+    <button 
+      class="btn btn-lg mx-2 custom-btn"
+      [ngClass]="{'btn-outline-danger': filtroSeleccionado !== 'red', 'btn-danger active-btn': filtroSeleccionado === 'red'}"
+      (click)="filtrarPuntos('red')">
+      <i class="fas fa-times-circle icon-spacing"></i><span>&nbsp;&nbsp;</span> Por Atender
+    </button>
+
+    <!-- Botón de Todos -->
+    <button 
+      class="btn btn-lg mx-2 custom-btn"
+      [ngClass]="{'btn-outline-info': filtroSeleccionado !== 'all', 'btn-info active-btn': filtroSeleccionado === 'all'}"
+      (click)="filtrarPuntos('all')">
+      <i class="fas fa-circle icon-spacing"></i><span>&nbsp;&nbsp;</span> Todos
+    </button>
+  </div>
+</div>
+
+<!-- Mapa -->
+<div class="row row-deck row-cards">
+  <div class="card">
+    <div class="col-12">
+      <div class="card-header pb-1 pt-2">
+      </div>
+
+      <div class="card-body p-0">
+        <div id="map-canvas" style="height: 400px; width: 100%;" data-lat="19.4326" data-lng="-99.1332"></div>
+      </div>
+    </div>
+    <br />
+  </div>
+</div>
