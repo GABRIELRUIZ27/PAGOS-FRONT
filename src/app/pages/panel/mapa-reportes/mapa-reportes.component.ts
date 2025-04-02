@@ -168,9 +168,19 @@ export class MapaReportesComponent implements AfterViewInit {
   }
 
   getContentString(incidencias: Reporte) {
-    return `...`; // Aquí va el contenido del infowindow
+    return `
+    <div style="width: 350px; height: auto;" class="text-center">
+      <img src="${incidencias.foto}" alt="Imagen de incidencia" style="width: 100%; height: auto;">
+      <div class="px-4 py-4">
+        <p style="font-weight: bolder;">Ubicación:</p>
+        <p class="text-muted">${incidencias.direccion || 'Sin dirección'}</p>
+        
+        <p style="font-weight: bolder;">Comunidad:</p>
+        <p class="text-muted">${incidencias.comunidad?.nombre || 'Desconocida'}</p>
+      </div>
+    </div>`;
   }
-
+  
   getMarker(incidencias: Reporte) {
     const color = incidencias.atendida ? '#008000' : '#FF0000'; 
     const marker = new google.maps.Marker({
